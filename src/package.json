@@ -2,14 +2,9 @@
   "name": "tickets-bot-rota",
   "version": "1.0.0",
   "description": "Sistema de tickets Discord — ROTA",
-  "main": "src/index.js",
-  "type": "commonjs",
+  "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node src/index.js"
-  },
-  "engines": {
-    "node": ">=18.0.0"
+    "start": "node index.js"
   },
   "dependencies": {
     "discord.js": "^14.16.3",
