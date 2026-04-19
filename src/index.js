@@ -1,4 +1,3 @@
-
 const express = require("express");
 const app = express();
 
@@ -12,8 +11,7 @@ app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
 
-
-
+console.log("TOKEN:", process.env.TOKEN ? "OK" : "NÃO ENCONTRADO");
 
 
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
@@ -33,6 +31,10 @@ const client = new Client({
 
 loadCommands(client);
 loadEvents(client);
+
+client.once("ready", () => {
+  console.log(`🚔 Bot online como ${client.user.tag}`);
+});
 
 client.login(config.token).catch((e) => {
   console.error('[ROTA] Falha no login. Verifique TOKEN no .env:', e.message);
