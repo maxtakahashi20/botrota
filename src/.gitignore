@@ -1,4 +1,7 @@
 node_modules/
+.npm-cache/
 .env
 *.log
 transcripts/
+src.zip
+*.zip

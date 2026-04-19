@@ -1,9 +1,9 @@
-require('dotenv').config({ path: require('path').join(__dirname, '../../.env') });
+require('dotenv').config();
 
 function requireEnv(name) {
   const v = process.env[name];
-  if (!v || v.startsWith('ID_') || v === 'SEU_TOKEN_AQUI') {
-    console.warn(`[config] Variável ausente ou placeholder: ${name}`);
+  if (!v || String(v).trim() === '') {
+    console.warn(`[config] Variável ausente: ${name}`);
   }
   return v;
 }
@@ -32,13 +32,13 @@ module.exports = {
   logEmbedImageUrl: (process.env.LOG_EMBED_IMAGE_URL || '').trim(),
   ticketCooldownSeconds: Number(process.env.TICKET_COOLDOWN_SECONDS) || 60,
 
-  embedColor: 0xff0000,
+  embedColor: '#ffffff',
 
   ticketTypes: {
     recrutamento: {
-      label: '📄 Recrutamento',
+      label: '📄 Concurso',
       slug: 'recrutamento',
-      menuLabel: 'Recrutamento',
+      menuLabel: 'Concurso',
       menuEmoji: '📄',
       summary:
         'Canal para candidaturas e etapas de ingresso na ROTA. Explique sua motivação e aguarde orientação da equipe.',

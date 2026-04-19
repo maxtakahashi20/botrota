@@ -84,15 +84,27 @@ async function userHasOpenTicket(guild, userId) {
 
 function buildPanelEmbed() {
   const e = new EmbedBuilder()
-    .setTitle('🚔 Sistema Ticket | ROTA')
+    .setTitle('🎫 CENTRAL DE TICKETS | 2ª CIA ROTA')
     .setDescription(
       [
-        'Atendimento organizado da ROTA no Discord. Cada pedido vira um canal privado só entre você e a equipe — evita misturar assuntos no chat geral, mantém histórico e dá mais privacidade quando precisar.',
+        'Bem-vindo à nossa Central de Atendimento. Escolha a categoria referente ao seu assunto:',
         '',
-        'Clique no botão do tipo de atendimento e preencha o assunto no formulário que abrir.',
+        '## **1. CONCURSO E INGRESSO**',
+        '• **Edital:** Verifique se as vagas estão **ABERTAS** no canal de anúncios.',
+        '• **Dúvidas:** Utilize este ticket para questões sobre formulários ou fases do processo seletivo da 2ª Companhia.',
+        '',
+        '## **2. DÚVIDAS E SUPORTE**',
+        '• Informações gerais, suporte administrativo ou questões operacionais em Salve RP.',
+        '',
+        '## **INSTRUÇÕES:**',
+        '1. Descreva brevemente o seu assunto abaixo.',
+        '2. Um membro da nossa equipe de atendimento irá responder em breve.',
+        '',
+        '> *"ROTA - Reservado aos poucos."*',
       ].join('\n')
     )
     .setColor(config.embedColor);
+
   if (config.embedImageUrl) e.setImage(config.embedImageUrl);
   return e;
 }
@@ -147,11 +159,11 @@ function buildTicketWelcomeEmbed(member, typeDef, subject) {
 
 function buildControlRow() {
   return new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId('rota_ticket_close')
-      .setLabel('Fechar Ticket')
-      .setStyle(ButtonStyle.Primary)
-      .setEmoji('🔒'),
+    // new ButtonBuilder()
+    //   .setCustomId('rota_ticket_close')
+    //   .setLabel('Fechar Ticket')
+    //   .setStyle(ButtonStyle.Primary)
+    //   .setEmoji('🔒'),
     new ButtonBuilder()
       .setCustomId('rota_ticket_delete')
       .setLabel('Deletar Ticket')
@@ -547,7 +559,7 @@ function buildTranscriptHtml(channel, messages, meta) {
     ? `<p><b>Assunto:</b> ${esc(meta.subject)}</p>`
     : '';
   return `<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Transcript ${esc(channel.name)}</title>
-<style>body{font-family:Segoe UI,Arial,sans-serif;background:#111;color:#eee;padding:16px;} .msg{border-bottom:1px solid #333;padding:8px 0;} .ts{color:#888;font-size:12px;}</style></head><body>
+<style>body{font-family:Segoe UI,Arial,sans-serif;background:#111;color:#ffffff;padding:16px;} .msg{border-bottom:1px solid #333;padding:8px 0;} .ts{color:#888;font-size:12px;}</style></head><body>
 <h1>Transcript — ${esc(channel.name)}</h1>
 <p>Canal: ${esc(channel.id)} | Gerado: ${esc(new Date().toISOString())}</p>
 <p>Tipo: ${esc(typeDef ? typeDef.label : meta?.typeKey || '—')}</p>

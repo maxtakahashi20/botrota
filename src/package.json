@@ -1,14 +1,19 @@
 {
-  "name": "tickets-bot-rota",
+  "name": "botrota",
   "version": "1.0.0",
-  "description": "Sistema de tickets Discord — ROTA",
+  "description": "Discord ticket bot ROTA",
   "main": "index.js",
   "scripts": {
+    "build": "npm ls --depth=0 && node --check index.js && node --check config/index.js && node --check handlers/commandHandler.js && node --check handlers/eventHandler.js && node --check handlers/ticketService.js && node --check events/ready.js && node --check events/interactionCreate.js && node --check commands/painelTicket.js",
+    "test": "npm run build",
     "start": "node index.js"
   },
+  "keywords": ["discord", "bot"],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "discord.js": "^14.16.3",
-    "dotenv": "^16.4.5",
-    "express": "^5.2.1"
+    "dotenv": "^16.6.1",
+    "express": "^4.19.2"
   }
 }
