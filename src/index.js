@@ -1,3 +1,21 @@
+
+const express = require("express");
+const app = express();
+
+const PORT = process.env.PORT || 3000;
+
+app.get("/", (req, res) => {
+  res.send("Bot ROTA Online 🚔");
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
+
+
+
+
+
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const config = require('./config');
 const { loadCommands } = require('./handlers/commandHandler');
