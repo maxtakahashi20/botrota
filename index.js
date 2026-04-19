@@ -1,4 +1,6 @@
-require('dotenv').config({ path: './env' });
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, 'env') });
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const express = require("express");
 const app = express();
@@ -17,9 +19,9 @@ console.log("TOKEN:", process.env.TOKEN ? "OK" : "NÃO ENCONTRADO");
 
 
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
-const config = require('./config');
-const { loadCommands } = require('./handlers/commandHandler');
-const { loadEvents } = require('./handlers/eventHandler');
+const config = require('./src/config');
+const { loadCommands } = require('./src/handlers/commandHandler');
+const { loadEvents } = require('./src/handlers/eventHandler');
 
 const client = new Client({
   intents: [

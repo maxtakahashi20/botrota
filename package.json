@@ -4,7 +4,7 @@
   "description": "Discord ticket bot ROTA",
   "main": "index.js",
   "scripts": {
-    "build": "npm ls --depth=0 && node --check index.js && node --check config/index.js && node --check handlers/commandHandler.js && node --check handlers/eventHandler.js && node --check handlers/ticketService.js && node --check events/ready.js && node --check events/interactionCreate.js && node --check commands/painelTicket.js",
+    "build": "npm ls --depth=0 && node --check index.js && node --check src/config/index.js && node --check src/handlers/commandHandler.js && node --check src/handlers/eventHandler.js && node --check src/handlers/ticketService.js && node --check src/events/ready.js && node --check src/events/interactionCreate.js && node --check src/commands/painelTicket.js",
     "test": "npm run build",
     "start": "node index.js"
   },
