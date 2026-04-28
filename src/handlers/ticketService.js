@@ -234,7 +234,9 @@ async function upsertTicketPanel(client) {
 }
 
 /**
- * Botão do painel: valida e abre modal para o usuário informar o assunto.
+ * Botão do painel:
+ * - Para recrutamento/concurso: cria o ticket automaticamente (sem modal).
+ * - Para os demais: abre modal para o usuário informar o assunto.
  * @param {import('discord.js').ButtonInteraction} interaction
  * @param {string} typeKey
  */
@@ -264,6 +266,129 @@ async function openTicketModalFromButton(interaction, typeKey) {
       content: 'Você já possui um ticket aberto. Finalize-o antes de abrir outro.',
       ephemeral: true,
     });
+    return;
+  }
+
+  if (isInterviewType(typeKey)) {
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+    const categoryId = config.ticketCategoryId;
+    const category = await interaction.guild.channels.fetch(categoryId).catch(() => null);
+    if (!category || category.type !== ChannelType.GuildCategory) {
+      await interaction.editReply({ content: 'Categoria de tickets inválida (config).' });
+      return;
+    }
+
+    const name = channelNameForTicket(typeDef.slug, interaction.member);
+    const staffRoleId = config.staffRoleId;
+    const everyoneId = interaction.guild.roles.everyone.id;
+    const botId = interaction.client.user.id;
+    const subject = 'Entrevista — Concurso/Ingresso (automático)';
+
+    /** @type {import('discord.js').TextChannel | null} */
+    let ticketChannel = null;
+
+    try {
+      ticketChannel = await interaction.guild.channels.create({
+        name,
+        type: ChannelType.GuildText,
+        parent: categoryId,
+        topic: `ROTA_TICKET|user:${interaction.user.id}|type:${typeKey}|closed:0`,
+        permissionOverwrites: [
+          { id: everyoneId, deny: [PermissionFlagsBits.ViewChannel] },
+          {
+            id: botId,
+            allow: [
+              PermissionFlagsBits.ViewChannel,
+              PermissionFlagsBits.SendMessages,
+              PermissionFlagsBits.ReadMessageHistory,
+              PermissionFlagsBits.ManageChannels,
+              PermissionFlagsBits.ManageMessages,
+              PermissionFlagsBits.EmbedLinks,
+              PermissionFlagsBits.AttachFiles,
+            ],
+          },
+          {
+            id: interaction.user.id,
+            allow: [
+              PermissionFlagsBits.ViewChannel,
+              PermissionFlagsBits.SendMessages,
+              PermissionFlagsBits.ReadMessageHistory,
+              PermissionFlagsBits.AttachFiles,
+              PermissionFlagsBits.EmbedLinks,
+            ],
+          },
+          {
+            id: staffRoleId,
+            allow: [
+              PermissionFlagsBits.ViewChannel,
+              PermissionFlagsBits.SendMessages,
+              PermissionFlagsBits.ReadMessageHistory,
+              PermissionFlagsBits.ManageMessages,
+              PermissionFlagsBits.AttachFiles,
+              PermissionFlagsBits.EmbedLinks,
+            ],
+          },
+        ],
+      });
+
+      ticketMeta.set(ticketChannel.id, {
+        userId: interaction.user.id,
+        typeKey,
+        subject,
+        openedAt: Date.now(),
+        closed: false,
+      });
+
+      // Sem card/boas-vindas para recrutamento: a entrevista já manda embeds.
+      // (mantemos o canal “limpo” para o fluxo de whitelist)
+    } catch (e) {
+      console.error(e);
+      if (ticketChannel) {
+        ticketMeta.delete(ticketChannel.id);
+        await ticketChannel
+          .delete('Ticket incompleto — erro ao criar ou iniciar entrevista')
+          .catch(() => null);
+      }
+      const code = e?.code;
+      let msg =
+        'Falha ao configurar o ticket. Verifique permissões do bot na categoria e os IDs no `.env`.';
+      if (code === 50001) {
+        msg =
+          'O bot ficou sem acesso ao canal do ticket (erro 50001). Isso costumava ocorrer quando o bot não tinha overwrite próprio; atualize o bot. Se o canal órfão ainda existir, apague manualmente.';
+      } else if (code === 50013) {
+        msg = 'O bot não tem permissão suficiente para criar canais nesta categoria (50013).';
+      }
+      await interaction.editReply({ content: msg });
+      return;
+    }
+
+    const logFields = [
+      { name: 'Usuário', value: `${interaction.user} (\`${interaction.user.id}\`)`, inline: true },
+      { name: 'Tipo', value: typeDef.label, inline: true },
+      { name: 'Canal', value: `${ticketChannel}`, inline: true },
+      { name: 'Assunto', value: subject, inline: false },
+    ];
+
+    try {
+      await interaction.editReply({ content: `Ticket criado: ${ticketChannel}` });
+      await sendLog(interaction.client, {
+        title: '📂 Ticket aberto',
+        fields: logFields,
+        color: config.embedColor,
+      });
+    } catch (e) {
+      console.error('[ticket] Pós-abertura (log/reply):', e);
+    }
+
+    if (ticketChannel) {
+      setTimeout(() => {
+        startRecruitmentInterview(interaction.client, ticketChannel, interaction.user).catch((e) =>
+          console.error('[interview] startRecruitmentInterview', e)
+        );
+      }, 800);
+    }
+
     return;
   }
 
