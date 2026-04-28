@@ -1,5 +1,6 @@
 const { Events, MessageFlags } = require('discord.js');
 const ticketService = require('../handlers/ticketService');
+const interviewService = require('../handlers/interviewService');
 
 module.exports = {
   name: Events.InteractionCreate,
@@ -18,6 +19,10 @@ module.exports = {
       }
 
       if (interaction.isButton()) {
+        if (interviewService.isInterviewButtonId(interaction.customId)) {
+          await interviewService.handleInterviewDecision(interaction);
+          return;
+        }
         if (interaction.customId.startsWith('rota_ticket_open:')) {
           const typeKey = interaction.customId.slice('rota_ticket_open:'.length);
           await ticketService.openTicketModalFromButton(interaction, typeKey);

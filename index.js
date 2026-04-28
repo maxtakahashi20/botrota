@@ -1,6 +1,15 @@
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, 'env') });
-require('dotenv').config({ path: path.join(__dirname, '.env') });
+const fs = require('fs');
+
+// Carrega variáveis de ambiente antes de qualquer import de config/handlers.
+// Prioridade: `src/.env` (como no seu projeto) e fallback para `.env` na raiz.
+const envCandidates = [
+  path.resolve(__dirname, 'src', '.env'),
+  path.resolve(__dirname, '.env'),
+];
+
+const envPath = envCandidates.find((p) => fs.existsSync(p));
+require('dotenv').config(envPath ? { path: envPath } : undefined);
 
 const express = require("express");
 const app = express();
