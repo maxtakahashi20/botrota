@@ -12,7 +12,7 @@ const APPROVE_PREFIX = 'rota_interview_approve:';
 const REJECT_PREFIX = 'rota_interview_reject:';
 
 const INTERVIEW_TYPE_KEY = 'recrutamento';
-const ANSWER_TIMEOUT_MS = 120000;
+const ANSWER_TIMEOUT_MS = 240000;
 const MAX_FIELD_LENGTH = 1024;
 const CLOSE_DELAY_MS = 5000;
 
@@ -24,7 +24,7 @@ const AVISO = [
   '',
   'Isso pode resultar na **perda da sua vaga**.',
   '',
-  `Responda as perguntas abaixo com atenção. Você terá **${Math.floor(ANSWER_TIMEOUT_MS / 1000)} segundos** para responder cada uma.`,
+  `Responda as perguntas abaixo com atenção. Você terá **${Math.floor(ANSWER_TIMEOUT_MS / 60000)} minutos** para responder cada uma.`,
 ].join('\n');
 
 const PERGUNTAS = [
@@ -47,6 +47,16 @@ const PERGUNTAS = [
 /** @type {Map<string, 'running' | 'submitted' | 'decided'>} channelId -> state */
 const interviewState = new Map();
 
+function buildTicketDeleteRow() {
+  return new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('rota_ticket_delete')
+      .setLabel('Deletar Ticket')
+      .setEmoji('🗑️')
+      .setStyle(ButtonStyle.Danger)
+  );
+}
+
 function buildAvisoEmbed(user) {
   return new EmbedBuilder()
     .setTitle('🚨 Atenção — Entrevista ROTA')
@@ -58,14 +68,14 @@ function buildAvisoEmbed(user) {
 }
 
 function buildPerguntaEmbed(user, index, total, pergunta) {
-  const timeoutS = Math.floor(ANSWER_TIMEOUT_MS / 1000);
+  const timeoutMin = Math.floor(ANSWER_TIMEOUT_MS / 60000);
   return new EmbedBuilder()
     .setTitle(`📋 Entrevista ROTA — Pergunta ${index + 1}/${total}`)
     .setDescription(pergunta)
     .setColor(0xffffff)
     .addFields([
       { name: 'Candidato', value: `${user} (\`${user.id}\`)`, inline: true },
-      { name: 'Tempo para responder', value: `**${timeoutS}s**`, inline: true },
+      { name: 'Tempo para responder', value: `**${timeoutMin} min**`, inline: true },
     ])
     .setFooter({ text: 'Responda neste canal com uma mensagem.' })
     .setTimestamp();
@@ -155,7 +165,7 @@ async function runInterview(channel, user) {
   interviewState.set(channel.id, 'running');
 
   try {
-    await channel.send({ embeds: [buildAvisoEmbed(user)] });
+    await channel.send({ embeds: [buildAvisoEmbed(user)], components: [buildTicketDeleteRow()] });
   } catch (e) {
     console.error('[interview] Falha ao enviar aviso:', e);
     interviewState.delete(channel.id);
@@ -217,7 +227,7 @@ function buildReviewEmbed(user, ticketChannel, respostas) {
   return new EmbedBuilder()
     .setTitle('📄 Nova Entrevista — Processo ROTA')
     .setDescription(`Candidato: ${user} (\`${user.id}\`)`)
-    .setColor(0xff0000)
+    .setColor(0xffffff)
     .addFields(fields)
     .setFooter({ text: `${user.tag} • ${user.id}` })
     .setTimestamp();
