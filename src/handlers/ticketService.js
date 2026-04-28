@@ -24,6 +24,7 @@ const MODAL_INPUT_ASSUNTO = 'rota_ticket_assunto';
 const ASSUNTO_MIN_LEN = 3;
 const ASSUNTO_MAX_LEN = 2000;
 const config = require('../config');
+const { startRecruitmentInterview, isInterviewType } = require('./interviewService');
 
 /** @type {Map<string, number>} userId -> expiry timestamp */
 const cooldownUntil = new Map();
@@ -441,6 +442,16 @@ async function handleTicketModalSubmit(interaction) {
     });
   } catch (e) {
     console.error('[ticket] Pós-abertura (log/reply):', e);
+  }
+
+  if (isInterviewType(typeKey) && ticketChannel) {
+    // Pequeno delay para o usuário ler o embed de boas-vindas antes do bot
+    // começar a sequência de perguntas. Fire-and-forget.
+    setTimeout(() => {
+      startRecruitmentInterview(interaction.client, ticketChannel, interaction.user).catch(
+        (e) => console.error('[interview] startRecruitmentInterview', e)
+      );
+    }, 1500);
   }
 }
 

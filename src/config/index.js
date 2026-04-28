@@ -1,4 +1,6 @@
-require('dotenv').config();
+const path = require('path');
+// Garante carregamento mesmo se alguém importar config sem passar pelo `index.js`.
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 function requireEnv(name) {
   const v = process.env[name];
