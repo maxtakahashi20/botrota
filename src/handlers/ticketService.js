@@ -85,23 +85,22 @@ async function userHasOpenTicket(guild, userId) {
 
 function buildPanelEmbed() {
   const e = new EmbedBuilder()
-    .setTitle('🎫 CENTRAL DE TICKETS | 2ª CIA ROTA')
+    .setTitle('🎫 CENTRAL| CAEP')
     .setDescription(
       [
         'Bem-vindo à nossa Central de Atendimento. Escolha a categoria referente ao seu assunto:',
         '',
         '## **1. CONCURSO E INGRESSO**',
         '• **Edital:** Verifique se as vagas estão **ABERTAS** no canal de anúncios.',
-        '• **Dúvidas:** Utilize este ticket para questões sobre formulários ou fases do processo seletivo da 2ª Companhia.',
+        '• **Dúvidas:** Utilize este ticket para questões sobre formulários ou fases do processo seletivo para a Unidade do CAEP.',
         '',
         '## **2. DÚVIDAS E SUPORTE**',
-        '• Informações gerais, suporte administrativo ou questões operacionais em Salve RP.',
+        '• Informações gerais, suporte administrativo ou questões operacionais.',
         '',
         '## **INSTRUÇÕES:**',
         '1. Descreva brevemente o seu assunto abaixo.',
         '2. Um membro da nossa equipe de atendimento irá responder em breve.',
         '',
-        '> *"ROTA - Reservado aos poucos."*',
       ].join('\n')
     )
     .setColor(config.embedColor);

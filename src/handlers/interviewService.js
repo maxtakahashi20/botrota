@@ -8,8 +8,8 @@ const {
 
 const config = require('../config');
 
-const APPROVE_PREFIX = 'rota_interview_approve:';
-const REJECT_PREFIX = 'rota_interview_reject:';
+const APPROVE_PREFIX = 'CAEP_interview_approve:';
+const REJECT_PREFIX = 'CAEP_interview_reject:';
 
 const INTERVIEW_TYPE_KEY = 'recrutamento';
 const ANSWER_TIMEOUT_MS = 240000;
@@ -17,7 +17,7 @@ const MAX_FIELD_LENGTH = 1024;
 const CLOSE_DELAY_MS = 5000;
 
 const AVISO = [
-  '🚨 **ATENÇÃO — PROCESSO SELETIVO ROTA**',
+  '🚨 **ATENÇÃO — PROCESSO SELETIVO CAEP**',
   '',
   'Para participar do processo, **mantenha sua DM aberta**.',
   'Caso esteja fechada, você **NÃO receberá** a mensagem de aprovação ou reprovação.',
@@ -28,17 +28,17 @@ const AVISO = [
 ].join('\n');
 
 const PERGUNTAS = [
-  '📌 **1.** Apresente-se brevemente e descreva sua trajetória dentro da corporação, destacando experiências relevantes para o ingresso no oficialato da ROTA.',
-  '📌 **2.** Quais são, na sua visão, os principais valores que um oficial da ROTA deve possuir? Explique como você aplica esses valores no seu dia a dia.',
+  '📌 **1.** Apresente-se brevemente e descreva sua trajetória dentro da corporação, destacando experiências relevantes para o ingresso no oficialato da CAEP.',
+  '📌 **2.** Quais são, na sua visão, os principais valores que um Policial do CAEP deve possuir? Explique como você aplica esses valores no seu dia a dia.',
   '📌 **3.** Descreva uma situação de alta pressão que você enfrentou em serviço. Como foi sua tomada de decisão e qual foi o desfecho da ocorrência?',
-  '📌 **4.** O que te motiva a ingressar especificamente na ROTA e não em outra unidade operacional?',
-  '📌 **5.** Explique qual é o papel de um oficial dentro de uma equipe da ROTA durante uma ocorrência crítica.',
+  '📌 **4.** O que te motiva a ingressar especificamente no CAEP e não em outra unidade operacional?',
+  '📌 **5.** Explique qual é o papel de um Policial efetivado no  CAEP durante uma ocorrência crítica.',
   '📌 **6.** Como você lidaria com uma equipe sob seu comando em um cenário onde há risco iminente e necessidade de resposta rápida?',
-  '📌 **7.** Na sua opinião, qual a importância da hierarquia e disciplina dentro da ROTA e como isso impacta o resultado operacional?',
+  '📌 **7.** Na sua opinião, qual a importância da hierarquia e disciplina dentro da CAEP e como isso impacta o resultado operacional?',
   '📌 **8.** Descreva como deve ser a conduta de um oficial fora de serviço, representando a imagem do batalhão.',
   '📌 **9.** Você se considera preparado física e psicologicamente para atuar em ocorrências de alto risco? Justifique sua resposta.',
   '📌 **10.** Em uma situação onde um subordinado descumpre uma ordem direta em operação, qual seria sua atitude como oficial?',
-  '📌 **11.** Caso seja aprovado, o que você pretende agregar ao batalhão e de que forma pretende evoluir dentro da ROTA?',
+  '📌 **11.** Caso seja aprovado, o que você pretende agregar ao batalhão e de que forma pretende evoluir dentro do CAEP?',
   '📌 **12.** Qual sua disponibilidade semanal ? ',
   '📌 **13.** Qual sua disponibilidade final de semana ? ',
   '📌 **14.** Voce ja foi  do ilegal em alguma cidade ? , se sim descreva brevemente ',
@@ -50,7 +50,7 @@ const interviewState = new Map();
 function buildTicketDeleteRow() {
   return new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId('rota_ticket_delete')
+      .setCustomId('CAEP_ticket_delete')
       .setLabel('Deletar Ticket')
       .setEmoji('🗑️')
       .setStyle(ButtonStyle.Danger)
@@ -59,7 +59,7 @@ function buildTicketDeleteRow() {
 
 function buildAvisoEmbed(user) {
   return new EmbedBuilder()
-    .setTitle('🚨 Atenção — Entrevista ROTA')
+    .setTitle('🚨 Atenção — Entrevista CAEP')
     .setDescription(AVISO)
     .setColor(0xff0000)
     .addFields([{ name: 'Candidato', value: `${user} (\`${user.id}\`)` }])
@@ -70,7 +70,7 @@ function buildAvisoEmbed(user) {
 function buildPerguntaEmbed(user, index, total, pergunta) {
   const timeoutMin = Math.floor(ANSWER_TIMEOUT_MS / 60000);
   return new EmbedBuilder()
-    .setTitle(`📋 Entrevista ROTA — Pergunta ${index + 1}/${total}`)
+    .setTitle(`📋 Entrevista— Pergunta ${index + 1}/${total}`)
     .setDescription(pergunta)
     .setColor(0xffffff)
     .addFields([
@@ -103,37 +103,37 @@ function buildSubmittedEmbed(user) {
 
 function buildAprovacaoDM(username) {
   return [
-    '📢 **APROVAÇÃO — ESTÁGIO ROTA**',
+    '📢 **APROVAÇÃO — ESTÁGIO CAEP**',
     '',
     `Prezado **${username}**,`,
     '',
-    'Após análise do seu processo seletivo e entrevista realizada pelo setor de **Recursos P1**, informamos que **Vossa Senhoria foi APROVADO para o Estágio da ROTA** — *Rondas Ostensivas Tobias de Aguiar*. 🚔',
+    'Após análise do seu processo seletivo e entrevista realizada pelo setor de **Recursos P1**, informamos que **Vossa Senhoria foi APROVADO para o Estágio do CAEP** — *Companhia de Ações Especiais*. 🚔',
     '',
     'Sua aprovação se dá com base em sua experiência prévia na unidade, conhecimento da doutrina e postura apresentada durante a entrevista.',
     '',
     '📌 **Orientações:**',
     '• Dirigir-se até a **canaleta de Carteira Funcional**',
-    '• Solicitar o **SET da ROTA**',
+    '• Solicitar o **SET da CAEP**',
     '• Aguardar orientações do comando ou instrutores responsáveis pelo estágio',
     '',
     '⚠️ **Observação:**',
     'O período de estágio será utilizado para avaliação de desempenho, disciplina, adaptação operacional e conduta dentro da corporação.',
     '',
-    'Seja bem-vindo novamente ao processo de formação da **ROTA**. Boa sorte em sua jornada.',
+    'Seja bem-vindo novamente ao processo de formação da **CAEP**. Boa sorte em sua jornada.',
     '',
-    '👮‍♂️ **1º Sargento Max Takahashi**',
+    '👮‍♂️ **Tenente Coronel Max Takahashi**',
     '📂 **Recursos P1**',
-    '🚔 **Rondas Ostensivas Tobias de Aguiar**',
+    '🚔 **Companhia de Ações Especiais**',
   ].join('\n');
 }
 
 function buildReprovacaoDM(username) {
   return [
-    '📢 **RESULTADO — PROCESSO ROTA**',
+    '📢 **RESULTADO — PROCESSO CAEP**',
     '',
     `Prezado **${username}**,`,
     '',
-    'Após análise criteriosa do seu processo seletivo e entrevista realizada pelo setor de **Recursos P1**, informamos que neste momento **Vossa Senhoria NÃO foi aprovado** para o Estágio da ROTA — *Rondas Ostensivas Tobias de Aguiar*.',
+    'Após análise criteriosa do seu processo seletivo e entrevista realizada pelo setor de **Recursos P1**, informamos que neste momento **Vossa Senhoria NÃO foi aprovado** para o Estágio da CAEP — *Rondas Ostensivas Tobias de Aguiar*.',
     '',
     'Agradecemos seu interesse e o tempo dedicado ao processo. Recomendamos que continue desenvolvendo seu RP e participe de **futuras seleções** da corporação.',
     '',
@@ -225,7 +225,7 @@ function buildReviewEmbed(user, ticketChannel, respostas) {
   });
 
   return new EmbedBuilder()
-    .setTitle('📄 Nova Entrevista — Processo ROTA')
+    .setTitle('📄 Nova Entrevista — Processo CAEP')
     .setDescription(`Candidato: ${user} (\`${user.id}\`)`)
     .setColor(0xffffff)
     .addFields(fields)
